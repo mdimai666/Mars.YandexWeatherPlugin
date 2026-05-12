@@ -1,0 +1,21 @@
+@using AppFront.Shared.Components
+@using Mars.Options.Attributes
+@using Mars.Shared.Options.Attributes
+@using Microsoft.FluentUI.AspNetCore.Components
+@using System.ComponentModel.DataAnnotations
+@using YandexWeatherPlugin.Shared.Options
+@attribute [OptionEditFormForOptionAttribute(typeof(YandexWeatherPluginOption))]
+@attribute [Display(Name = "My Plugin Option")]
+@attribute [AutoShowFormOnSettingsPage]
+
+<EditOptionForm @ref=form TModel="YandexWeatherPluginOption">
+    <h3>Настройки YandexWeather</h3>
+    <FormItem2 For=@(() => context.OptionValue)>
+        <FluentTextField @bind-Value=context.OptionValue Class="" />
+    </FormItem2>
+</EditOptionForm>
+
+@code {
+    EditOptionForm<YandexWeatherPluginOption>? form;
+
+}

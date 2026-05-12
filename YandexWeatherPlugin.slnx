@@ -1,0 +1,14 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path=".gitattributes" />
+    <File Path=".gitignore" />
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="tests/Test.YandexWeatherPlugin/Test.YandexWeatherPlugin.csproj" Id="9033365c-2a2f-4d69-a7d9-ade6542f6f8d" />
+  </Folder>
+  <Project Path="src/YandexWeatherPlugin.Front/YandexWeatherPlugin.Front.csproj" />
+  <Project Path="src/YandexWeatherPlugin.Shared/YandexWeatherPlugin.Shared.csproj" />
+  <Project Path="src/YandexWeatherPlugin/YandexWeatherPlugin.csproj" />
+</Solution>

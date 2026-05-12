@@ -1,0 +1,74 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+
+        <!--Public-->
+        <PackageId>mdimai666.YandexWeatherPlugin</PackageId>
+        <Version>0.0.1</Version>
+        <PackageVersion>0.0.1</PackageVersion>
+        <Authors>mdimai666</Authors>
+        <Company>mdimai666</Company>
+        <Product>YandexWeatherPlugin</Product>
+        <PackageTags>Mars;yandex;weather;</PackageTags>
+        <Description>
+            Gets weather from Yandex services.
+        </Description>
+        <PackageIcon>icon.png</PackageIcon>
+        <RepositoryUrl>https://github.com/mdimai666/Mars.YandexWeatherPlugin</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+
+        <EnableDynamicLoading>true</EnableDynamicLoading>
+    </PropertyGroup>
+    <ItemGroup>
+        <None Remove="Services\geo-codes.txt" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!--this is information for mars-->
+        <AssemblyMetadata Include="PackageTags" Value="$(PackageTags)" />
+        <AssemblyMetadata Include="PackageId" Value="$(PackageId)" />
+        <AssemblyMetadata Include="RepositoryUrl" Value="$(RepositoryUrl)" />
+        <AssemblyMetadata Include="PackageIcon" Value="$(PackageIcon)" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Include="Services\geo-codes.txt" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="..\..\assets\icon.png" Pack="true" PackagePath="\" Link="wwwroot\icon.png" CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="mdimai666.Mars.Host.Data" Version="0.7.4-alpha.10" />
+        <PackageReference Include="mdimai666.Mars.Host.Data.PostgreSQL" Version="0.7.4-alpha.10" />
+        <PackageReference Include="mdimai666.Mars.Plugin.PluginPublishScript" Version="0.7.4-alpha.10" />
+        <PackageReference Include="mdimai666.Mars.Plugin.Kit.Host" Version="0.7.4-alpha.10" />
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.203" PrivateAssets="All" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.7" PrivateAssets="all" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\YandexWeatherPlugin.Front\YandexWeatherPlugin.Front.csproj" />
+        <ProjectReference Include="..\YandexWeatherPlugin.Shared\YandexWeatherPlugin.Shared.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Update="appsettings.local.json">
+            <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+
+    <Target Name="RunPostPublishScript" AfterTargets="111Publish" Condition="'$(Configuration)' == 'Release'">
+        <Exec Command="dotnet $(NuGetPackageRoot)mdimai666.Mars.Plugin.PluginPublishScript\0.7.4-alpha.10\lib\net10.0\Mars.Plugin.PluginPublishScript.dll --run-postpublish --ProjectName=$(ProjectName) --out=$(PublishDir) --ProjectDir=$(ProjectDir)" />
+    </Target>
+
+    <Target Name="RunPostCompileDebugScript" AfterTargets="111CoreBuild" Condition="'$(Configuration)' == 'Debug'">
+        <Exec Command="dotnet $(NuGetPackageRoot)mdimai666.Mars.Plugin.PluginPublishScript\0.7.4-alpha.10\lib\net10.0\Mars.Plugin.PluginPublishScript.dll --run-postdebugcompile --ProjectName=$(ProjectName) --out=$(OutDir) --ProjectDir=$(ProjectDir)" />
+    </Target>
+
+</Project>

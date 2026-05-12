@@ -1,0 +1,76 @@
+@using AppFront.Shared.Components
+@using Flurl.Http
+@using Mars.Core.Extensions
+@using Mars.Nodes.Core
+@using Mars.Nodes.Core.Attributes
+@using Mars.Nodes.FormEditor
+@using Mars.Nodes.FormEditor.EditForms.Components
+@using Mars.WebApiClient.Interfaces
+@using Microsoft.FluentUI.AspNetCore.Components
+@using YandexWeatherPlugin.Front.Nodes
+@inherits NodeEditForm
+@attribute [NodeEditFormForNode(typeof(YandexWeatherNode))]
+
+<div class="form-group compact" style="--fluent-input-label-basis:150px">
+    <div class="vstack gap-2">
+
+        <FormItem2 For="() => Node.GeoCode">
+            <FluentAutocomplete TOption="SelectGeoItem"
+                                AutoComplete="off"
+                                Multiple=false
+                                MaximumSelectedOptions="1"
+                                Autofocus="true"
+                                Width="250px"
+                                Placeholder="Select location"
+                                OnOptionsSearch="@OnSearchAsync"
+                                OptionText="@(item => item.Value)"
+                                @bind-SelectedOption="@GetCodeSetter" />
+        </FormItem2>
+
+        <FormItem2 For="() => Node.Language">
+            <FluentTextField @bind-Value=@Node.Language Class="" />
+        </FormItem2>
+
+    </div>
+</div>
+
+@code {
+    [CascadingParameter] Node? Value { get; set; }
+    YandexWeatherNode Node { get => (YandexWeatherNode)Value!; set => Value = value; }
+
+    [Inject] IMarsWebApiClient _client { get; set; } = default!;
+
+    Dictionary<int, SelectGeoItem> GeoCodes = [];
+    SelectGeoItem? GetCodeSetter { get => field; set { field = value; Node.GeoCode = value?.Key ?? 1; } }
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        GetCodeSetter = new SelectGeoItem { Key = Node.GeoCode, Value = $"({Node.GeoCode})" };
+
+        if (GeoCodes.Values.None()) Load();
+    }
+
+    async void Load()
+    {
+        var url = "/api/YandexWeatherPlugin/GeoCodesList";
+
+        var res = await _client.Client.Request(url).GetJsonAsync<Dictionary<int, string>>();
+        GeoCodes = res.ToDictionary(s => s.Key, s => new SelectGeoItem { Key = s.Key, Value = s.Value });
+
+        GetCodeSetter = GeoCodes.GetValueOrDefault(Node.GeoCode);
+        StateHasChanged();
+    }
+
+    private async Task OnSearchAsync(OptionsSearchEventArgs<SelectGeoItem> e)
+    {
+        e.Items = GeoCodes.Values.Where(s => s.Value.Contains(e.Text, StringComparison.OrdinalIgnoreCase))
+                              .OrderBy(i => i.Value).Take(20);
+    }
+
+    class SelectGeoItem
+    {
+        public int Key { get; set; }
+        public string Value { get; set; } = "";
+    }
+}
