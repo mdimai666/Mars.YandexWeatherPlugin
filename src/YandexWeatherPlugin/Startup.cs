@@ -1,6 +1,8 @@
+using Mars.Host.Shared.Services;
 using Mars.Plugin.Abstractions;
 using Mars.Plugin.Kit.Host;
 using Mars.Plugin.PluginHost;
+using Mars.Shared.Options;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using YandexWeatherPlugin;
@@ -36,9 +38,25 @@ public class MainYandexWeatherPlugin : WebApplicationPlugin
 #endif
 
         //some option
-        //var optionService = app.Services.GetRequiredService<IOptionService>();
+        var optionService = app.Services.GetRequiredService<IOptionService>();
         //optionService.RegisterOption<YandexWeatherPluginOption>(appendToInitialSiteData: true);
         //optionService.SetConstOption(new Example1PluginConstOptionForFront() { ForFrontValue = "123" }, appendToInitialSiteData: true);
+
+        var weatherService = app.Services.GetRequiredService<YandexWeatherService>();
+
+        var oldSiteUrl = optionService.SysOption.SiteUrl;
+
+        optionService.OnOptionUpdate += opt =>
+        {
+            if(opt is SysOptions sysOptions)
+            {
+                if(oldSiteUrl != sysOptions.SiteUrl)
+                {
+                    oldSiteUrl = sysOptions.SiteUrl;
+                    weatherService.SiteDomainChanges();
+                }
+            }
+        };
     }
 
 }

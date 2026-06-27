@@ -3,7 +3,6 @@ using System.Net.Mime;
 using Mars.Host.Shared.ExceptionFilters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using YandexWeatherPlugin.Dto;
 using YandexWeatherPlugin.Services;
 using YandexWeatherPlugin.Shared.Dto.Weather;
 
@@ -29,7 +28,7 @@ public class YandexWeatherPluginController : ControllerBase
     [HttpGet("GetWeather")]
     public async Task<WeatherWidgetResponse> GetWeather(int geoCode = 213, [DefaultValue("ru")] string language = "ru")
     {
-        return (await _service.GetWeather(geoCode, language)).ToResponse();
+        return await _service.GetWeather(geoCode, language);
     }
 
     [HttpGet("GeoCodesList")]

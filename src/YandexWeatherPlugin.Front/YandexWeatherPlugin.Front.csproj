@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
     <PropertyGroup>
         <TargetFramework>net10.0</TargetFramework>
@@ -26,7 +26,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="mdimai666.Mars.Plugin.Kit.Front" Version="0.7.4-alpha.10" />
+        <PackageReference Include="mdimai666.Mars.Plugin.Kit.Front" Version="0.7.6-alpha.16" />
         <!--<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.7" />-->
     </ItemGroup>
 
