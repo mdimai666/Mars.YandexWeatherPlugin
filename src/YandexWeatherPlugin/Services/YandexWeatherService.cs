@@ -1,52 +1,39 @@
 using System.Text.Json;
 using Flurl.Http;
 using Mars.Host.Shared.Dto.Files;
-using Microsoft.Extensions.Caching.Hybrid;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using YandexWeatherPlugin.Dto;
 using YandexWeatherPlugin.Models;
-using YandexWeatherPlugin.Shared.Dto.Weather;
 
 namespace YandexWeatherPlugin.Services;
 
 public class YandexWeatherService
 {
-    const string CacheTag = "YandexWeatherPlugin";
-    private readonly HybridCache _cache;
+    private readonly IMemoryCache _cache;
     private readonly FileHostingInfo _fileHostingInfo;
-    private readonly HybridCacheEntryOptions _entryOptions = new()
-    {
-        LocalCacheExpiration = TimeSpan.FromHours(1),
-        Expiration = TimeSpan.FromHours(2),
-    };
+    private readonly TimeSpan _cacheTtl = TimeSpan.FromHours(1);
 
     public GeoCodesDict GeoCodesDict { get; }
 
-    public YandexWeatherService(HybridCache cache, IOptions<FileHostingInfo> fileHostingInfo)
+    public YandexWeatherService(IMemoryCache cache, IOptions<FileHostingInfo> fileHostingInfo)
     {
         GeoCodesDict = new();
         _cache = cache;
         _fileHostingInfo = fileHostingInfo.Value;
     }
 
-    public void SiteDomainChanges()
-    {
-        _cache.RemoveByTagAsync(CacheTag);
-    }
+    string CacheKey(int geoCode, string language) => $"YandexWeatherPlugin:Weather-value-{geoCode}-{language}";
 
-    string CacheKey(int geoCode, string language) => $"{CacheTag}:Weather-value-{geoCode}-{language}";
-
-    public ValueTask<WeatherWidgetResponse> GetWeather(int geoCode, string language)
+    public Task<WeatherWidget> GetWeather(int geoCode, string language)
     {
         var key = CacheKey(geoCode, language);
-        return _cache.GetOrCreateAsync<WeatherWidgetResponse>(key, async entry =>
+        return _cache.GetOrCreateAsync<WeatherWidget>(key, async entry =>
         {
+            entry.AbsoluteExpirationRelativeToNow = _cacheTtl;
             var res = await GetWeatherFromApi(geoCode, language);
-            var weatherWidget = new WeatherWidget(res, _fileHostingInfo.Backend.AbsoluteUri);
-            return weatherWidget.ToResponse();
-        },
-        options: _entryOptions,
-        tags: [CacheTag])!;
+            return new WeatherWidget(res, _fileHostingInfo.Backend.AbsoluteUri);
+        })!;
     }
 
     private async Task<YandexWeatherResponse> GetWeatherFromApi(int geoCode, string language = "ru", CancellationToken cancellationToken = default)
