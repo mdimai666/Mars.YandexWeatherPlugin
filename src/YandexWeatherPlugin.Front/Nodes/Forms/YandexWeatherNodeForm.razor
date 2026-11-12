@@ -1,4 +1,4 @@
-@using AppFront.Shared.Components
+@using Mars.Admin.Framework.Components
 @using Flurl.Http
 @using Mars.Core.Extensions
 @using Mars.Nodes.Core
@@ -15,8 +15,7 @@
     <div class="vstack gap-2">
 
         <FormItem2 For="() => Node.GeoCode">
-            <FluentAutocomplete TOption="SelectGeoItem"
-                                AutoComplete="off"
+            <FluentAutocomplete TOption="SelectGeoItem" TValue="string"
                                 Multiple=false
                                 MaximumSelectedOptions="1"
                                 Autofocus="true"
@@ -24,11 +23,11 @@
                                 Placeholder="Select location"
                                 OnOptionsSearch="@OnSearchAsync"
                                 OptionText="@(item => item.Value)"
-                                @bind-SelectedOption="@GetCodeSetter" />
+                                @bind-SelectedItem="@GetCodeSetter" />
         </FormItem2>
 
         <FormItem2 For="() => Node.Language">
-            <FluentTextField @bind-Value=@Node.Language Class="" />
+            <FluentTextInput @bind-Value=@Node.Language Class="" />
         </FormItem2>
 
     </div>

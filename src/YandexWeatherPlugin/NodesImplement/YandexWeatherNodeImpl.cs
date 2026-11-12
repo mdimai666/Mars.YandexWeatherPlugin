@@ -1,5 +1,5 @@
+using Mars.Nodes.Abstractions;
 using Mars.Nodes.Core;
-using Mars.Nodes.Host.Shared;
 using YandexWeatherPlugin.Front.Nodes;
 using YandexWeatherPlugin.Services;
 

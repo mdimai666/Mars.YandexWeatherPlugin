@@ -1,6 +1,6 @@
 using System.Text.Json;
 using Flurl.Http;
-using Mars.Host.Shared.Dto.Files;
+using Mars.Contracts.Dto.Files;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using YandexWeatherPlugin.Dto;
